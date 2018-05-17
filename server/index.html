@@ -1,0 +1,34 @@
+<html>
+<head>
+<title>RPS-Online</title>
+</head>
+<body>
+<ul id="list">
+</ul>
+
+<form id="form">
+    <input type="text" id="input" required autofocus autocomplete="off">
+</form>
+
+<script>
+const ws = new WebSocket('ws://localhost:8080');
+
+function message(msg) {
+	const li = document.createElement('li');
+
+	li.innerHTML = msg;
+	var list = document.getElementById('list');
+	list.appendChild(li);
+}
+
+ws.onmessage = (msg) => message(msg.data);
+
+form.addEventListener('submit', event => {
+	event.preventDefault();
+	
+	ws.send(input.value);
+	input.value = '';
+});
+</script>
+</body>
+</html>
