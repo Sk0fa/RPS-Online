@@ -1,13 +1,32 @@
 var WebSocket = require('ws');
+var express = require('express');
+var http = require('http');
+var fs = require('fs');
 
-var server = new WebSocket.Server({ port: 8080 });
+const app = express();
+const server = http.createServer(app);
+const wss = new WebSocket.Server({ server });
 
-server.on('connection', ws => {
+wss.on('connection', ws => {
 	ws.on('message', msg => {
-		server.clients.forEach(client => {
+		wss.clients.forEach(client => {
 			if (client.readyState === WebSocket.OPEN) {
 				client.send(msg);
 			}
 		});
 	});
+});
+
+
+server.listen(8080);
+
+app.use(express.static(__dirname + "/public"));
+
+app.get("/", function(request, response){
+		fs.readFile('./index.html', (err, data) => {
+				if (err) {
+						console.log(err);
+				}
+				response.send(data);
+		});
 });

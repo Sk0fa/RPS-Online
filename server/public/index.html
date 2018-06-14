@@ -25,7 +25,7 @@ ws.onmessage = (msg) => message(msg.data);
 
 form.addEventListener('submit', event => {
 	event.preventDefault();
-
+	
 	ws.send(input.value);
 	input.value = '';
 });
