@@ -1,22 +1,9 @@
-var WebSocket = require('ws');
 var express = require('express');
 var http = require('http');
 var fs = require('fs');
 
 const app = express();
 const server = http.createServer(app);
-const wss = new WebSocket.Server({ server });
-
-wss.on('connection', ws => {
-	ws.on('message', msg => {
-		wss.clients.forEach(client => {
-			if (client.readyState === WebSocket.OPEN) {
-				client.send(msg);
-			}
-		});
-	});
-});
-
 
 server.listen(8080);
 
@@ -30,3 +17,5 @@ app.get("/", function(request, response){
 				response.send(data);
 		});
 });
+
+console.log('Start http server');
