@@ -18,8 +18,8 @@ class SimpleGame {
         this.players = players;
         this.gameScore = new Map();
         this.currentTurn = new Map();
-        fillCurrentTurn();
-        fillGameScore();
+        this.fillCurrentTurn();
+        this.fillGameScore();
     }
 
     fillCurrentTurn() {
@@ -30,7 +30,7 @@ class SimpleGame {
 
     fillGameScore() {
         for (var i = 0; i < this.players.length; i++) {
-            this.gameScore.set(this.player[i], 0);
+            this.gameScore.set(this.players[i], 0);
         }
     }
 
@@ -46,15 +46,23 @@ class SimpleGame {
         }
 
         this.currentRound += 1;
-        var winner = getRoundWinner();
+        var winner = this.getRoundWinner();
         this.gameScore.set(winner, this.gameScore.get(winner) + 1);
-        fillCurrentTurn();
+        this.fillCurrentTurn();
 
         if (this.currentRound == this.roundsCount) {
             this.isFinished = true;
         }
-        
+
         return winner;
+    }
+
+    getGameWinner() {
+        firstPlayerScore = this.gameScore.get(this.player[0]);
+        secondPlayerScore = this.gameScore.get(this.player[1]);
+
+        return (firstPlayerScore > secondPlayerScore) ?
+         this.player[0] : this.player[1];
     }
 
     getRoundWinner() {
