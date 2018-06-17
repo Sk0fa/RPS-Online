@@ -1,41 +1,39 @@
+<!DOCTYPE html>
 <html>
 <head>
+<meta charset="utf-8">
+<meta name="viewport" content="width=device-width, initial-scale=1">
+
 <title>RPS-Online</title>
+
+<link rel="stylesheet" href="/css/bootstrap.min.css">
+<script src="/js/bootstrap.min.js"></script>
 </head>
 <body>
 <ul id="list">
 </ul>
 
-<form id="form">
-    <input type="text" id="input" required autofocus autocomplete="off">
-</form>
+<div class="container">
+    <div class="row">
+        <div class="col-md-4 offset-md-4">
+            <div class="card">
+                <div class="card-header">Камень ножницы бумага</div>
+                <div class="card-body">
+                    <form id="form">
+                        <div class="form-group">
+                            <label for="login">Логин:</label>
+                            <input type="text" class="form-control" id="login">
+                        </div>
+                        <div class="form-group">
+                            <button type="submit" class="btn btn-success" id="play">Вход</button>
+                        </div>
+                    </form>
+                </div>
+            </div>
+        </div>
+    </div>
+</div>
 
-<script>
-const ws = new WebSocket('ws://localhost:8000');
-
-function message(msg) {
-	const li = document.createElement('li');
-
-	li.innerHTML = msg;
-	var list = document.getElementById('list');
-	list.appendChild(li);
-}
-
-ws.onmessage = (msg) => message(msg.data);
-
-form.addEventListener('submit', event => {
-	event.preventDefault();
-    var inputValue = input.value;
-    if (inputValue.startsWith('!login')) {
-        var login = inputValue.split(' ')[1];
-        msg = JSON.stringify({
-            'type': 'login',
-            'login': login
-        });
-        ws.send(msg);
-    }
-	input.value = '';
-});
-</script>
+<script src="/js/main.js"></script>
 </body>
 </html>
