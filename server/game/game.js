@@ -6,13 +6,12 @@ choices = {
 }
 
 class SimpleGame {
-    constructor(id, roundsCount, players) {
+    constructor(roundsCount, players) {
         if (!players || players.length != 2) {
             throw "Players must be an array with length = 2";
         }
 
         this.isFinished = false;
-        this.id = id;
         this.roundsCount = roundsCount;
         this.currentRound = 1;
         this.players = players;
@@ -88,8 +87,8 @@ class SimpleGame {
     }
 }
 
-exports.SimpleGame = function (id, roundsCount, players) {
-    return new SimpleGame(id, roundsCount, players);
+exports.SimpleGame = function (roundsCount, players) {
+    return new SimpleGame(roundsCount, players);
 };
 
 exports.choices = choices;

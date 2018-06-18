@@ -20,4 +20,9 @@ form.addEventListener('submit', event => {
     });
     ws.send(msg);
 	loginInput.value = '';
+
+	msg = JSON.stringify({
+		'type': 'findGame'
+	});
+	ws.send(msg);
 });
