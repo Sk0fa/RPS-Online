@@ -1,5 +1,6 @@
 var p = require('../game/player.js');
 var gFinder = require('./gameFinder.js');
+var g = require('../game/game.js');
 
 
 class MsgHundler {
@@ -48,16 +49,16 @@ class MsgHundler {
     makeTurnHandler(msg, ws) {
         var playerIndex = this.getPlayerIndexByWs(ws);
         if (playerIndex == -1) { return; }
-        if (!checkOnLogin(ws) || !checkOnStartGame(msg)) {
+        if (!this.checkOnLogin(ws) || !this.checkOnStartGame(msg)) {
             return;
         }
 
+        var game = this.gameFinder.gameController.games[msg['gameId']];
         var player = this.getPlayerFromGame(msg['gameId'], ws);
         this.gameFinder.gameController.makeTurn(msg['gameId'], player, msg['choice']);
         var winner = this.gameFinder.gameController.checkRoundWinner(msg['gameId']);
 
         var msg = {}
-        var game = this.gameFinder.gameController.games[msg['gameId']];
         if (winner) {
             if (game.isFinished) {
                 msg = {
@@ -83,6 +84,18 @@ class MsgHundler {
         return this.wsServer.players.findIndex((el) => {
             return el.ws == ws;
         });
+    }
+
+    getChoice(choice, game) {
+        if (choice == 'ROCK') {
+            console.log(1);
+            return g.ROCK;
+        }
+        else if (choice == 'PAPER') {
+            return g.PAPER;
+        }
+
+        return g.SCISSORS;
     }
 
     getPlayerFromGame(gameId, ws) {
@@ -123,6 +136,7 @@ class MsgHundler {
         }
 
         if (playerIndex == -1) {
+            console.log('4');
             return false;
         }
         return true;

@@ -23,6 +23,9 @@ function msgHandler(msg) {
 	else if (type == 'roundEnd') {
 		roundEnd(message);
 	}
+	else if (type == 'gameFinished') {
+		gameFinished(message);
+	}
 }
 
 ws.onmessage = (msg) => msgHandler(msg.data);
@@ -37,7 +40,12 @@ function roundEnd(msg) {
 	updateScore();
 
 	getById("turn").style.display = "block";
-	getById('enemy-turn-wait').style.display = "block";
+	getById('enemy-turn-wait').style.display = "none";
+}
+
+function gameFinished(msg) {
+	var score = msg['score'].join(':');
+	getById('game').innerHTML = `Победил ${msg['winner']} со счетом: ${score}`;
 }
 
 function startGame(msg) {
@@ -69,6 +77,21 @@ function findGame() {
 	ws.send(msg);
 
 	getById('login-form').style.display = "none";
+}
+
+function turnMake() {
+	getById("turn").style.display = "none";
+	getById("enemy-turn-wait").style.display = "block";
+	choice = document.querySelector('input[name="choice"]:checked').value;
+
+	msg = JSON.stringify({
+		'type': 'turn',
+		'gameId': gameId,
+		'choice': choice,
+		'login': selfLogin
+	});
+
+	ws.send(msg);
 }
 
 function updateScore() {

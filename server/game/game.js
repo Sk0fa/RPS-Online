@@ -1,8 +1,8 @@
 choices = {
-    EMPTY: 0,
-    ROCK: 1,
-    SCISSORS: 2,
-    PAPER: 3
+    'EMPTY': 0,
+    'ROCK': 1,
+    'SCISSORS': 2,
+    'PAPER': 3
 }
 
 class SimpleGame {
@@ -23,7 +23,7 @@ class SimpleGame {
 
     fillCurrentTurn() {
         for (var i = 0; i < this.players.length; i++) {
-            this.currentTurn.set(this.players[i], choices.EMPTY);
+            this.currentTurn.set(this.players[i], choices['EMPTY']);
         }
     }
 
@@ -39,7 +39,7 @@ class SimpleGame {
 
     checkRoundWinner() {
         for (var [key, value] of this.currentTurn) {
-            if (value == undefined) {
+            if (value == choices['EMPTY']) {
                 return false;
             }
         }
@@ -57,29 +57,29 @@ class SimpleGame {
     }
 
     getGameWinner() {
-        firstPlayerScore = this.gameScore.get(this.player[0]);
-        secondPlayerScore = this.gameScore.get(this.player[1]);
+        var firstPlayerScore = this.gameScore.get(this.player[0]);
+        var secondPlayerScore = this.gameScore.get(this.player[1]);
 
         return (firstPlayerScore > secondPlayerScore) ?
          this.player[0] : this.player[1];
     }
 
     getRoundWinner() {
-        firstPlayerChoice = this.currentTurn.get(this.players[0]);
-        secondPlayerChoice = this.currentTurn.get(this.players[1]);
+        var fPC = this.currentTurn.get(this.players[0]);
+        var sPC = this.currentTurn.get(this.players[1]);
 
-        switch (firstPlayerChoice) {
-            case choices.ROCK:
-                return (secondPlayerChoice == choices.SCISSORS) ?
-                 this.player[0] : this.player[1];
+        switch (choices[fPC]) {
+            case choices['ROCK']:
+                return (choices[sPC] == choices['SCISSORS']) ?
+                 this.players[0] : this.players[1];
                 break;
-            case choices.SCISSORS:
-                return (secondPlayerChoice == choices.PAPER) ?
-                 this.player[0] : this.player[1];
+            case choices['SCISSORS']:
+                return (choices[sPC] == choices['PAPER']) ?
+                 this.players[0] : this.players[1];
                  break;
-            case choices.PAPER:
-                return (secondPlayerChoice == choices.ROCK) ?
-                 this.player[0] : this.player[1];
+            case choices['PAPER']:
+                return (choices[sPC] == choices['ROCK']) ?
+                 this.players[0] : this.players[1];
                  break;
             default:
                 throw "First player don't choose object";
