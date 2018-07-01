@@ -17,6 +17,9 @@ class MsgHundler {
         else if (message['type'] == 'findGame') {
             this.findGameHandler(message, ws);
         }
+        else if (message['type'] == 'turn') {
+            this.makeTurnHandler(message, ws);
+        }
     }
 
     loginMsgHandler(msg, ws) {
@@ -45,8 +48,35 @@ class MsgHundler {
     makeTurnHandler(msg, ws) {
         var playerIndex = this.getPlayerIndexByWs(ws);
         if (playerIndex == -1) { return; }
+        if (!checkOnLogin(ws) || !checkOnStartGame(msg)) {
+            return;
+        }
 
-        this.gameController.makeTurn(msg['gameId'], player, msg['choice']);
+        var player = this.getPlayerFromGame(msg['gameId'], ws);
+        this.gameFinder.gameController.makeTurn(msg['gameId'], player, msg['choice']);
+        var winner = this.gameFinder.gameController.checkRoundWinner(msg['gameId']);
+
+        var msg = {}
+        var game = this.gameFinder.gameController.games[msg['gameId']];
+        if (winner) {
+            if (game.isFinished) {
+                msg = {
+                    'type': 'gameFinished',
+                    'score': game.gameScore,
+                    'winner': winner.login
+                }
+            }
+            else {
+                msg = {
+                    'type': 'roundEnd',
+                    'winner': winner.login
+                }
+            }
+
+            for (var i = 0; i < game.players.length; i++) {
+                game.players[i].ws.send(JSON.stringify(msg));
+            }
+        }
     }
 
     getPlayerIndexByWs(ws) {
@@ -55,10 +85,47 @@ class MsgHundler {
         });
     }
 
+    getPlayerFromGame(gameId, ws) {
+        var game = this.gameFinder.gameController.games[gameId];
+        for (var i = 0; i < game.players.length; i++) {
+            if (ws == game.players[i].ws) {
+                return game.players[i];
+            }
+        }
+    }
+
     getPlayerFromFindersListByWs(ws) {
         return this.gameFinder.findersList.findIndex((el) => {
             return el.ws == ws;
         })
+    }
+
+    checkOnLogin(ws) {
+        var playerIndex = this.getPlayerIndexByWs(ws);
+        if (playerIndex == -1) {
+            ws.send(JSON.stringify({
+                'type': 'error',
+                'error_msg': 'Your connection has no loggined.'
+            }));
+            return false;
+        }
+        return true;
+    }
+
+    checkOnStartGame(msg) {
+        var game = this.gameFinder.gameController.games[msg['gameId']];
+        var playerIndex = -1;
+        for (var i = 0; i < game.players.length; i++) {
+            if (game.players[i].login == msg['login']) {
+                playerIndex = i;
+                break;
+            }
+        }
+
+        if (playerIndex == -1) {
+            return false;
+        }
+        return true;
     }
 }
 

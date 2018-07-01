@@ -1,5 +1,9 @@
 const ws = new WebSocket('ws://localhost:8000');
-
+var selfLogin = '';
+var enemyLogin = '';
+var selfScore = '0';
+var enemyScore = '0';
+var gameId = '';
 
 function getById(id) {
 	return document.getElementById(id);
@@ -9,21 +13,52 @@ getById('find-game').style.display = "none";
 
 function msgHandler(msg) {
 	var message = JSON.parse(msg);
-	if (message['type'] == 'error') {
+	type = message['type'];
+	if (type == 'error') {
 		alert(message['error_msg']);
 	}
-	else if (message['type'] == 'startGame') {
-		startGame();
+	else if (type == 'startGame') {
+		startGame(message);
+	}
+	else if (type == 'roundEnd') {
+		roundEnd(message);
 	}
 }
 
 ws.onmessage = (msg) => msgHandler(msg.data);
 
-function startGame() {
+function roundEnd(msg) {
+	if (msg['winner'] == selfLogin) {
+		selfScore = (parseInt(selfScore) + 1).toString();
+	}
+	else {
+		enemyScore = (parseInt(enemyScore) + 1).toString();
+	}
+	updateScore();
+
+	getById("turn").style.display = "block";
+	getById('enemy-turn-wait').style.display = "block";
+}
+
+function startGame(msg) {
 	var gameHtml = httpGet('/game.html');
-	console.log(gameHtml);
 	getById('find-game').style.display = "none";
 	getById('game').innerHTML = gameHtml;
+
+	enemyLogin = getEnemyLogin(msg);
+	gameId = msg['gameId'];
+	getById('self-login').innerHTML = selfLogin;
+	getById('enemy-login').innerHTML = enemyLogin;
+	getById('enemy-turn-wait').style.display = "none";
+}
+
+function getEnemyLogin(msg) {
+	console.log(msg);
+	if (msg['firstPlayer'] !== selfLogin) {
+		return msg['firstPlayer'];
+	}
+
+	return msg['secondPlayer'];
 }
 
 function findGame() {
@@ -34,6 +69,11 @@ function findGame() {
 	ws.send(msg);
 
 	getById('login-form').style.display = "none";
+}
+
+function updateScore() {
+	getById("self-score").innerHTML = selfScore;
+	getById("enemy-score").innerHTML = enemyScore;
 }
 
 function httpGet(url)
@@ -54,6 +94,7 @@ form.addEventListener('submit', event => {
     });
     ws.send(msg);
 	loginInput.value = '';
+	selfLogin = login;
 
 	findGame();
 });
